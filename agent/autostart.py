@@ -13,10 +13,20 @@ logger = logging.getLogger(__name__)
 
 APP_NAME = "ClassRoomManagerAgent"
 PLIST_LABEL = "com.classroom.agent"
-RUN_AGENT_PATH = os.path.normpath(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "run_agent.py")
-)
-PYTHON_PATH = sys.executable or "python3"
+
+# EXE olaraq işlədikdə sys.executable özü EXE-dir
+# Python ilə işlədikdə isə run_agent.py yolunu istifadə edirik
+_FROZEN = getattr(sys, "frozen", False)
+if _FROZEN:
+    # PyInstaller EXE — birbaşa exe yolunu istifadə et
+    EXE_PATH = sys.executable
+    RUN_AGENT_PATH = EXE_PATH
+    PYTHON_PATH = EXE_PATH
+else:
+    RUN_AGENT_PATH = os.path.normpath(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "run_agent.py")
+    )
+    PYTHON_PATH = sys.executable or "python3"
 
 
 def _get_os() -> str:
@@ -41,6 +51,16 @@ def _macos_plist_path() -> str:
 
 
 def _macos_plist_content() -> str:
+    if _FROZEN:
+        program_args = f"""    <array>
+        <string>{EXE_PATH}</string>
+    </array>"""
+    else:
+        program_args = f"""    <array>
+        <string>{PYTHON_PATH}</string>
+        <string>{RUN_AGENT_PATH}</string>
+    </array>"""
+
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -49,10 +69,7 @@ def _macos_plist_content() -> str:
     <key>Label</key>
     <string>{PLIST_LABEL}</string>
     <key>ProgramArguments</key>
-    <array>
-        <string>{PYTHON_PATH}</string>
-        <string>{RUN_AGENT_PATH}</string>
-    </array>
+{program_args}
     <key>RunAtLoad</key>
     <true/>
     <key>KeepAlive</key>
@@ -113,7 +130,10 @@ _WIN_REG_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 def _windows_install() -> bool:
     try:
         import winreg
-        command = f'"{PYTHON_PATH}" "{RUN_AGENT_PATH}"'
+        if _FROZEN:
+            command = f'"{EXE_PATH}"'
+        else:
+            command = f'"{PYTHON_PATH}" "{RUN_AGENT_PATH}"'
         key = winreg.OpenKey(
             winreg.HKEY_CURRENT_USER, _WIN_REG_KEY, 0, winreg.KEY_SET_VALUE
         )
@@ -170,10 +190,14 @@ def _linux_desktop_path() -> str:
 
 
 def _linux_desktop_content() -> str:
+    if _FROZEN:
+        exec_cmd = EXE_PATH
+    else:
+        exec_cmd = f"python3 {RUN_AGENT_PATH}"
     return f"""[Desktop Entry]
 Type=Application
 Name=ClassRoom Manager Agent
-Exec=python3 {RUN_AGENT_PATH}
+Exec={exec_cmd}
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true

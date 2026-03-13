@@ -273,6 +273,12 @@ def main():
     app.setQuitOnLastWindowClosed(False)
     app.setApplicationName("ClassRoom Manager Agent")
 
+    # İlk açılışda avtomatik startup-a əlavə et
+    from .autostart import install_autostart, is_installed
+    if not is_installed():
+        install_autostart()
+        logger.info("Avtomatik başlatma quruldu (ilk açılış)")
+
     # Tray ikonu
     tray = AgentTrayIcon(app)
     tray.show()
