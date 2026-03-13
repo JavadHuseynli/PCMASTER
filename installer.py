@@ -15,6 +15,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+BUILD_SCRIPT = os.path.join(PROJECT_ROOT, "build_agent.py")
 
 
 class InstallerApp:
@@ -215,7 +216,7 @@ class InstallerApp:
         self._set_progress(65, "Agent EXE yaradılır... (bu bir az çəkə bilər)")
         self._log("Agent build başladı...")
         ok = self._run_cmd(
-            [python, "build_agent.py", "--onefile"],
+            [python, BUILD_SCRIPT, "--onefile"],
             "build Agent EXE",
         )
         if ok:
@@ -228,7 +229,7 @@ class InstallerApp:
         self._set_progress(85, "Master EXE yaradılır...")
         self._log("Master build başladı...")
         ok = self._run_cmd(
-            [python, "build_agent.py", "--master", "--onefile"],
+            [python, BUILD_SCRIPT, "--master", "--onefile"],
             "build Master EXE",
         )
         if ok:
