@@ -1,0 +1,22 @@
+{
+    "master": {
+        "port": 11100,
+        "screenshot_interval": 3,
+        "screenshot_quality": 50,
+        "thumbnail_size": [320, 180],
+        "demo_fps": 10,
+        "demo_quality": 60
+    },
+    "agent": {
+        "master_host": "auto",
+        "master_port": 11100,
+        "heartbeat_interval": 5,
+        "auto_connect": true,
+        "file_save_path": "~/Desktop/ClassRoom"
+    },
+    "security": {
+        "use_tls": false,
+        "pre_shared_key": "sinif2024",
+        "allowed_masters": []
+    }
+}
