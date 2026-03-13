@@ -24,12 +24,14 @@ from .file_handler import FileHandler
 from .tray_icon import AgentTrayIcon
 
 # Logging konfiqurasiyası
+_log_dir = Path.home() / ".classroom_manager"
+_log_dir.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(Path.home() / ".classroom_manager" / "agent.log", encoding="utf-8"),
+        logging.FileHandler(_log_dir / "agent.log", encoding="utf-8"),
     ],
 )
 logger = logging.getLogger("agent")
