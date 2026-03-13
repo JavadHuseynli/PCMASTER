@@ -7,7 +7,6 @@ python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
     echo  [XETA] Python tapilmadi!
-    echo.
     echo  Python yukleyin: https://www.python.org/downloads/
     echo  Qurasdirma zamani "Add Python to PATH" secin!
     echo.
@@ -15,6 +14,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: GUI installer ac
+:: Repo qovlugunu classroom_manager olaraq kopyala (import ucun lazimdir)
 cd /d "%~dp0\.."
-python installer.py
+set "REPO_DIR=%cd%"
+set "PARENT_DIR=%REPO_DIR%\.."
+set "TARGET=%PARENT_DIR%\classroom_manager"
+
+if not exist "%TARGET%\__init__.py" (
+    echo Paket strukturu qurulur...
+    if not "%~n1"=="classroom_manager" (
+        xcopy "%REPO_DIR%" "%TARGET%\" /E /I /Y /Q >nul 2>&1
+    )
+)
+
+:: GUI installer ac
+python "%REPO_DIR%\installer.py"
